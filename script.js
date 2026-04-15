@@ -42,4 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Ofuscación de datos de Contacto (Protección Anti-Bot)
+    // Se divide el texto para que las arañas web no puedan extraerlo directamente.
+    const telArr = ["+", "56", " 9 ", "5696", "9576"];
+    const mailArr = ["druz", "saavedra", "@", "gmail", ".com"];
+
+    const btnPhone = document.getElementById('btn-phone');
+    if(btnPhone) {
+        btnPhone.addEventListener('click', function(e) {
+            e.preventDefault();
+            const fullStr = telArr.join('');
+            this.innerHTML = `<i class="ph ph-phone"></i> ${fullStr}`;
+            const linkAction = `tel:${fullStr.replace(/\s/g, '')}`;
+            this.setAttribute('href', linkAction);
+            window.location.href = linkAction;
+            this.removeAttribute('id');
+        });
+    }
+
+    const btnEmail = document.getElementById('btn-email');
+    if(btnEmail) {
+        btnEmail.addEventListener('click', function(e) {
+            e.preventDefault();
+            const fullStr = mailArr.join('');
+            this.innerHTML = `<i class="ph ph-envelope"></i> ${fullStr}`;
+            const linkAction = `mailto:${fullStr}`;
+            this.setAttribute('href', linkAction);
+            window.location.href = linkAction;
+            this.removeAttribute('id'); 
+        });
+    }
 });
