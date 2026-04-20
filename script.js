@@ -1,36 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Reveal elements on scroll
+    // 1. Optimización: IntersectionObserver para animaciones de aparición
     const reveals = document.querySelectorAll('.reveal');
+    
+    const revealOptions = {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px"
+    };
 
-    function revealOnScroll() {
-        const windowHeight = window.innerHeight;
-        const elementVisible = 100;
-
-        reveals.forEach((reveal) => {
-            const elementTop = reveal.getBoundingClientRect().top;
-            if (elementTop < windowHeight - elementVisible) {
-                reveal.classList.add('active');
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target); // Dejar de observar una vez revelado
             }
         });
-    }
+    }, revealOptions);
 
-    // Call initially to reveal hero
-    revealOnScroll();
-    
-    // Call on scroll
-    window.addEventListener('scroll', revealOnScroll);
+    reveals.forEach(el => revealObserver.observe(el));
 
-    // Active link highlighting
+    // 2. Navbar dinámica y Active Links
+    const navbar = document.querySelector('.navbar');
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
 
     window.addEventListener('scroll', () => {
+        // Efecto Navbar al hacer scroll
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+
+        // Resaltado de links activos
         let current = '';
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.clientHeight;
-            if (scrollY >= (sectionTop - 200)) {
+            if (scrollY >= (sectionTop - 250)) {
                 current = section.getAttribute('id');
             }
         });
@@ -43,8 +50,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Ofuscación de datos de Contacto (Protección Anti-Bot)
-    // Se divide el texto para que las arañas web no puedan extraerlo directamente.
+    // 3. Menú Móvil Toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinksContainer = document.querySelector('.nav-links');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            navLinksContainer.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('ph-list');
+            icon.classList.toggle('ph-x');
+        });
+    }
+
+    // Cerrar menú al hacer clic en un enlace (móvil)
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navLinksContainer.classList.remove('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.add('ph-list');
+            icon.classList.remove('ph-x');
+        });
+    });
+
+    // 4. Ofuscación de datos de Contacto (Protección Anti-Bot)
     const telArr = ["+", "56", " 9 ", "5696", "9576"];
     const mailArr = ["druz", "saavedra", "@", "gmail", ".com"];
 
